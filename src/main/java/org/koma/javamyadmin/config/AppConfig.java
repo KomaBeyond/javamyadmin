@@ -48,9 +48,7 @@ public class AppConfig extends WebMvcConfigurerAdapter implements ApplicationCon
         registry.addResourceHandler("/assets/fonts/**").addResourceLocations("/WEB-INF/assets/fonts/");
     }
 
-    /**
-     * 配置 thymeleaf 视图解析器
-     */
+    /////////////////////////////////// 配置 thymeleaf 视图解析器
     @Bean
     public SpringResourceTemplateResolver templateResolver(){
         // SpringResourceTemplateResolver automatically integrates with Spring's own
@@ -89,4 +87,5 @@ public class AppConfig extends WebMvcConfigurerAdapter implements ApplicationCon
         viewResolver.setCharacterEncoding("UTF-8");
         return viewResolver;
     }
+    /////////////////////////////////// 配置 thymeleaf 视图解析器
 }
