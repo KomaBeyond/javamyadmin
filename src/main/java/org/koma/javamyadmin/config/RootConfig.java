@@ -1,23 +1,12 @@
 package org.koma.javamyadmin.config;
 
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationInfo;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.Authenticator;
-import org.apache.shiro.authz.AuthorizationException;
-import org.apache.shiro.authz.Authorizer;
-import org.apache.shiro.authz.Permission;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
-import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.koma.javamyadmin.auth.MyAuthenticator;
+import org.koma.javamyadmin.auth.JavaMyAdminRealm;
 import org.koma.javamyadmin.auth.FilterChainMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * 作为 spring ContextLoaderListener 上下文中 bean 的配置类文件
@@ -48,7 +37,7 @@ public class RootConfig {
         //设置身份认证器
         //设置权限验证器
         //设置用户信息数据源,即: Realm
-        securityManager.setRealm(new MyAuthenticator());
+        securityManager.setRealm(new JavaMyAdminRealm());
         return securityManager;
     }
 

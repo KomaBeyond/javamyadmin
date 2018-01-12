@@ -9,7 +9,7 @@ import org.apache.shiro.subject.PrincipalCollection;
 /**
  * @author koma <komazhang@foxmail.com>
  */
-public class MyAuthenticator extends AuthorizingRealm {
+public class JavaMyAdminRealm extends AuthorizingRealm {
     /**
      * 获取登录用户身份认证信息
      *
@@ -24,7 +24,7 @@ public class MyAuthenticator extends AuthorizingRealm {
         System.out.println(token.getUsername());
         System.out.println(token.getPassword());
 
-        MyAuthenticationInfo authenticationInfo = new MyAuthenticationInfo(
+        SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 token.getUsername(),
                 token.getPassword(),
                 getName()
