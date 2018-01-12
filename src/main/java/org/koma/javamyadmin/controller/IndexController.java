@@ -4,6 +4,9 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.koma.javamyadmin.model.LoginData;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -11,12 +14,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * @author koma <komazhang@foxmail.com>
  */
 @Controller
 @RequestMapping("/")
 public class IndexController {
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(@ModelAttribute("shiroLoginFailure") String error, Model model) {
         model.addAttribute("error", error);
@@ -56,6 +65,15 @@ public class IndexController {
 
     @RequestMapping(value = "/main", method = RequestMethod.GET)
     public String main() {
+        String sql = "show databases";
+        jdbcTemplate.query(sql, new MyRowMapper());
         return "main";
+    }
+
+    class MyRowMapper implements RowMapper<String> {
+        public String mapRow(ResultSet resultSet, int i) throws SQLException {
+            System.out.println(resultSet.getString("Database"));
+            return null;
+        }
     }
 }

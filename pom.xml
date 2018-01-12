@@ -21,6 +21,7 @@
         <thymeleaf.version>3.0.9.RELEASE</thymeleaf.version>
         <shiro.version>1.3.2</shiro.version>
         <lombok.version>1.16.18</lombok.version>
+        <mysql.connector.version>5.1.39</mysql.connector.version>
     </properties>
 
     <dependencies>
@@ -91,6 +92,20 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <!-- 加入 jdbc 依赖 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <!-- 加入 mysql connector 依赖 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.connector.version}</version>
         </dependency>
 
         <dependency>
