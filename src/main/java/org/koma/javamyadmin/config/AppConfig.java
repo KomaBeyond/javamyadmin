@@ -1,11 +1,15 @@
 package org.koma.javamyadmin.config;
 
+import com.alibaba.fastjson.support.config.FastJsonConfig;
+import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
@@ -14,6 +18,8 @@ import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import java.util.List;
+
 
 /**
  * 作为 spring DispatcherServlet 上下文中 bean 的配置类文件
@@ -21,6 +27,8 @@ import org.thymeleaf.templatemode.TemplateMode;
  * @author koma <komazhang@foxmail.com>
  */
 @Configuration
+//启动　AspectJ AOP
+@EnableAspectJAutoProxy
 //启用 SpringMVC 组件
 @EnableWebMvc
 //启用组件扫描
@@ -34,6 +42,19 @@ public class AppConfig extends WebMvcConfigurerAdapter implements ApplicationCon
 
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
+    }
+
+    /**
+     * 重写该方法以便于使用自定义的 JSON 转换器
+     * 这里 json 转换器采用 fastjson
+     */
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        FastJsonHttpMessageConverter messageConverter = new FastJsonHttpMessageConverter();
+        //自定义配置
+        FastJsonConfig jsonConfig = new FastJsonConfig();
+        messageConverter.setFastJsonConfig(jsonConfig);
+        converters.add(messageConverter);
     }
 
     /**
