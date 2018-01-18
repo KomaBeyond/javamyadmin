@@ -4,6 +4,8 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
 import org.koma.javamyadmin.model.LoginData;
+import org.koma.javamyadmin.model.MainData;
+import org.koma.javamyadmin.model.TestData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -12,10 +14,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author koma <komazhang@foxmail.com>
@@ -63,11 +68,24 @@ public class IndexController {
         return view;
     }
 
+    @ResponseBody
     @RequestMapping(value = "/main", method = RequestMethod.GET)
-    public String main() {
-        String sql = "show databases";
-        jdbcTemplate.query(sql, new MyRowMapper());
-        return "main";
+    public MainData main() {
+//        String sql = "show databases";
+//        jdbcTemplate.query(sql, new MyRowMapper());
+        MainData mainData = new MainData();
+
+        List<TestData> testDataList = new ArrayList<TestData>();
+        TestData testData1 = new TestData();
+        testData1.setName("test--1");
+        testDataList.add(testData1);
+
+        TestData testData2 = new TestData();
+        testData2.setName("test--2");
+        testDataList.add(testData2);
+
+        mainData.setDataList(testDataList);
+        return mainData;
     }
 
     class MyRowMapper implements RowMapper<String> {
