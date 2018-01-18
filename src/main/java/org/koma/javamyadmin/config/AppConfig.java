@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -26,6 +27,8 @@ import java.util.List;
  * @author koma <komazhang@foxmail.com>
  */
 @Configuration
+//启动　AspectJ AOP
+@EnableAspectJAutoProxy
 //启用 SpringMVC 组件
 @EnableWebMvc
 //启用组件扫描
