@@ -1,5 +1,6 @@
 package org.koma.javamyadmin.common;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Component;
  *
  * @author koma <komazhang@foxmail.com>
  */
+@Slf4j
 @Aspect
 @Component
 public class JavaMyAdminLog {
@@ -33,6 +35,7 @@ public class JavaMyAdminLog {
 
     @Around("controllerLogger()")
     public void aroundLog(ProceedingJoinPoint joinPoint) throws Throwable {
+        log.info("show log...");
         System.out.println("start exec join point method...");
         Object returnVal = joinPoint.proceed(); //exec join point
         System.out.println("end exec join point method...");

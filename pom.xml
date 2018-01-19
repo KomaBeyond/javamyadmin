@@ -24,7 +24,20 @@
         <mysql.connector.version>5.1.39</mysql.connector.version>
         <fastjson.version>1.2.44</fastjson.version>
         <aspectj.version>1.8.13</aspectj.version>
+        <logback.version>1.2.3</logback.version>
+        <slf4j.version>1.7.25</slf4j.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- 该依赖的作用是用来排除 spring commons-logging 对日志的影响 -->
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>99-empty</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <!-- 加载 servlet 依赖 -->
@@ -56,6 +69,38 @@
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
             <scope>provided</scope>
+        </dependency>
+
+        <!-- 加入 日志相关 依赖 -->
+        <!-- 在使用 slf4j 时需要去除默认的 spring commons-logging 的影响 -->
+        <!-- 具体做法请参考：https://www.slf4j.org/faq.html#excludingJCL -->
+        <!-- 这里选用其中该文章说说的第3种方式 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl-over-slf4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- logback-classic 会直接包含 slf4j -->
+        <!-- 因此下面的 slf4j 的依赖可以没有 -->
+        <!-- 关于 logback 的配置可参考：https://dzone.com/articles/configuring-logback-with-spring-boot -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+        <!-- slf4j 是为其它非 logback 日志框架而加载的依赖 -->
+        <!-- 在该项目中可以不需要此依赖 -->
+        <!--<dependency>-->
+            <!--<groupId>org.slf4j</groupId>-->
+            <!--<artifactId>slf4j-api</artifactId>-->
+            <!--<version>${slf4j.version}</version>-->
+        <!--</dependency>-->
+
+        <!-- 加入 aop 依赖 -->
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
 
         <!-- 加载 thymeleaf 模板依赖 -->
@@ -101,13 +146,6 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>${spring.version}</version>
-        </dependency>
-
-        <!-- 加入 aop 依赖 -->
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjweaver</artifactId>
-            <version>${aspectj.version}</version>
         </dependency>
 
         <!-- 加入 jdbc 依赖 -->
@@ -179,4 +217,11 @@
             -->
         </plugins>
     </build>
+
+    <repositories>
+        <repository>
+            <id>version99</id>
+            <url>http://version99.qos.ch/</url>
+        </repository>
+    </repositories>
 </project>
