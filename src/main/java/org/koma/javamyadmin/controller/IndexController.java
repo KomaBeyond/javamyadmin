@@ -1,5 +1,6 @@
 package org.koma.javamyadmin.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.subject.Subject;
@@ -11,10 +12,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.sql.ResultSet;
@@ -25,6 +23,7 @@ import java.util.List;
 /**
  * @author koma <komazhang@foxmail.com>
  */
+@Slf4j
 @Controller
 @RequestMapping("/")
 public class IndexController {
@@ -33,6 +32,7 @@ public class IndexController {
 
     @RequestMapping(value = "/login", method = RequestMethod.GET)
     public String login(@ModelAttribute("shiroLoginFailure") String error, Model model) {
+        log.info("login...");
         model.addAttribute("error", error);
         return "login";
     }
@@ -73,11 +73,12 @@ public class IndexController {
     public MainData main() {
 //        String sql = "show databases";
 //        jdbcTemplate.query(sql, new MyRowMapper());
+
         MainData mainData = new MainData();
 
         List<TestData> testDataList = new ArrayList<TestData>();
         TestData testData1 = new TestData();
-        testData1.setName("test--1");
+        testData1.setName("中华");
         testDataList.add(testData1);
 
         TestData testData2 = new TestData();
@@ -86,6 +87,7 @@ public class IndexController {
 
         mainData.setDataList(testDataList);
         return mainData;
+//        return "main";
     }
 
     class MyRowMapper implements RowMapper<String> {
