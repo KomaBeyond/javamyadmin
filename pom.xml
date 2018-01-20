@@ -26,6 +26,7 @@
         <aspectj.version>1.8.13</aspectj.version>
         <logback.version>1.2.3</logback.version>
         <slf4j.version>1.7.25</slf4j.version>
+        <hibernate.validator.version>6.0.4.Final</hibernate.validator.version>
     </properties>
 
     <dependencyManagement>
@@ -176,6 +177,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
             <version>${spring.version}</version>
+        </dependency>
+
+        <!-- 加入 spring validation 依赖 hibernate.validator -->
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate.validator.version}</version>
         </dependency>
 
         <dependency>
