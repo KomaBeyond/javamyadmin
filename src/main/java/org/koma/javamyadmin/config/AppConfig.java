@@ -1,18 +1,20 @@
 package org.koma.javamyadmin.config;
 
-import com.alibaba.fastjson.support.config.FastJsonConfig;
-import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.koma.javamyadmin.common.JavaMyAdminInterceptor;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -22,6 +24,9 @@ import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,22 +59,49 @@ public class AppConfig extends WebMvcConfigurerAdapter implements ApplicationCon
 
     /**
      * 重写该方法以便于使用自定义的 JSON 转换器
-     * 这里 json 转换器采用 fastjson
+     * 这里 json 转换器采用 jackson
      */
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        FastJsonHttpMessageConverter messageConverter = new FastJsonHttpMessageConverter();
-
-        //自定义配置
-        FastJsonConfig jsonConfig = new FastJsonConfig();
-        messageConverter.setFastJsonConfig(jsonConfig);
-
-        //设置MediaType支持
+        MappingJackson2HttpMessageConverter jacksonConverter = new MappingJackson2HttpMessageConverter();
+        //设置默认字符集
+        jacksonConverter.setDefaultCharset(Charset.forName("UTF-8"));
+        //定制序列化,反序列化过程
+        jacksonConverter.setObjectMapper(objectMapper());
+        //设置支持的媒体类型
         List<MediaType> mediaTypes = new ArrayList<MediaType>();
         mediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
-        messageConverter.setSupportedMediaTypes(mediaTypes);
+        jacksonConverter.setSupportedMediaTypes(mediaTypes);
+        converters.add(jacksonConverter);
+    }
 
-        converters.add(messageConverter);
+    @Bean
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+        ///////////////////////////////自定义序列化特性
+        //日期以时间戳格式返回
+        objectMapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
+        ///////////////////////////////自定义反序列化特性
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT);
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        SimpleModule simpleModule = new SimpleModule();
+        simpleModule.addDeserializer(String.class, new JsonDeserializer<String>() {
+            @Override
+            public String deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+                String val = jsonParser.getValueAsString();
+                return StringUtils.trimWhitespace(val);
+            }
+        });
+        objectMapper.registerModule(simpleModule);
+        //////////////////////////////其它设置
+        //将json里的key的小驼峰形式转成小写蛇形(单词间以下划线分割)
+        objectMapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+        //将值为null的key丢掉
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        return objectMapper;
     }
 
     /**
