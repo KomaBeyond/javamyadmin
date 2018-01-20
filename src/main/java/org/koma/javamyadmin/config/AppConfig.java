@@ -2,15 +2,19 @@ package org.koma.javamyadmin.config;
 
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import org.koma.javamyadmin.common.JavaMyAdminInterceptor;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.thymeleaf.spring4.SpringTemplateEngine;
@@ -18,6 +22,7 @@ import org.thymeleaf.spring4.templateresolver.SpringResourceTemplateResolver;
 import org.thymeleaf.spring4.view.ThymeleafViewResolver;
 import org.thymeleaf.templatemode.TemplateMode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -34,6 +39,9 @@ import java.util.List;
 //启用组件扫描
 @ComponentScan(basePackages = {"org.koma.javamyadmin"})
 public class AppConfig extends WebMvcConfigurerAdapter implements ApplicationContextAware {
+    @Autowired
+    private JavaMyAdminInterceptor javaMyAdminInterceptor;
+
     private ApplicationContext applicationContext;
 
     public AppConfig() {
@@ -51,10 +59,25 @@ public class AppConfig extends WebMvcConfigurerAdapter implements ApplicationCon
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         FastJsonHttpMessageConverter messageConverter = new FastJsonHttpMessageConverter();
+
         //自定义配置
         FastJsonConfig jsonConfig = new FastJsonConfig();
         messageConverter.setFastJsonConfig(jsonConfig);
+
+        //设置MediaType支持
+        List<MediaType> mediaTypes = new ArrayList<MediaType>();
+        mediaTypes.add(MediaType.APPLICATION_JSON_UTF8);
+        messageConverter.setSupportedMediaTypes(mediaTypes);
+
         converters.add(messageConverter);
+    }
+
+    /**
+     * 注入拦截器 Bean,可以有多个
+     * 实现全局输入,输出数据过滤
+     */
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(javaMyAdminInterceptor);
     }
 
     /**
